@@ -124,8 +124,8 @@ def extracted_by_connected_component(pdf_path: str, output_dir: str):
     gray_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_BGR2GRAY)
     _, binary_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
 
-    _, bboxes = find_connected_components(binary_image)
-    print(len(bboxes))
+    bboxes = find_connected_components(binary_image)
+    print("Number of connected components:", len(bboxes))
     output_path = f"{output_dir}/{pdf_path.split('/')[-1].split('.')[0]}_bbox_connected_component.png"
     visualize_bounding_boxes(color_image, bboxes, output_path)
 
