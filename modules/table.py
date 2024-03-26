@@ -13,7 +13,12 @@ from textractor.data.constants import TextractFeatures
 from textractor.visualizers.entitylist import EntityList
 from unstructured.partition.pdf import partition_pdf
 
-from modules.connected_component import find_connected_components
+from modules.bounding_box import BoundingBox
+from modules.connected_component import (
+    find_connected_components,
+    get_text_bboxes,
+    transform_bboxes_to_points,
+)
 from modules.visualize import visualize_bounding_boxes
 
 
@@ -124,10 +129,14 @@ def extracted_by_connected_component(pdf_path: str, output_dir: str):
     gray_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_BGR2GRAY)
     _, binary_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
 
-    bboxes = find_connected_components(binary_image)
-    print("Number of connected components:", len(bboxes))
-    output_path = f"{output_dir}/{pdf_path.split('/')[-1].split('.')[0]}_bbox_connected_component.png"
-    visualize_bounding_boxes(color_image, bboxes, output_path)
+    ccs = find_connected_components(binary_image)
+    print("Number of all bboxes", len(ccs))
+    bboxes = [BoundingBox(cc) for cc in ccs]
+    text_bboxes = get_text_bboxes(bboxes)
+    print("Number of text bboxes:", len(text_bboxes))
+    output_path = f"{output_dir}/{pdf_path.split('/')[-1].split('.')[0]}_text_bbox.png"
+    pts = transform_bboxes_to_points(text_bboxes)
+    visualize_bounding_boxes(color_image, pts, output_path)
 
 
 def parse_image(mode: str, image_path: str, output_dir: str) -> str:

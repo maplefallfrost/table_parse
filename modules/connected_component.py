@@ -3,12 +3,20 @@ from typing import List
 import numba
 import numpy as np
 
+from modules.bounding_box import BoundingBox
 
-@numba.jit(nopython=True)
-def transform_bboxes_to_points(bboxes):
+
+def transform_bboxes_to_points(
+    bboxes: List[BoundingBox],
+) -> List[List[tuple[int, int]]]:
     points_list = []
     for bbox in bboxes:
-        min_row, max_row, min_col, max_col = bbox
+        min_row, max_row, min_col, max_col = (
+            bbox.min_row,
+            bbox.max_row,
+            bbox.min_col,
+            bbox.max_col,
+        )
         # Define points in clockwise order starting from top-left
         points = [
             (min_col, min_row),  # Top-Left
@@ -85,4 +93,21 @@ def find_connected_components(matrix: np.ndarray) -> List[List[int]]:
                 root_to_bbox[root, 3] = max(max_col, col)
 
     final_bboxes = root_to_bbox[root_to_bbox[:, 0] != np.iinfo(np.int32).max]
-    return transform_bboxes_to_points(final_bboxes)
+    return final_bboxes
+
+
+def get_text_bboxes(bboxes: List[BoundingBox]) -> List[BoundingBox]:
+    areas = [bbox.area for bbox in bboxes]
+    Q3 = np.percentile(areas, 75)
+    text_bboxes = [bbox for bbox in bboxes if bbox.area < Q3 * 10]
+    return text_bboxes
+
+
+def hierarchical_clustering(bboxes: List[List[int]]) -> List[List[int]]:
+    def compute_center(bbox: List[int]) -> List[int]:
+        min_row, max_row, min_col, max_col = bbox
+        return [(min_row + max_row) // 2, (min_col + max_col) // 2]
+
+    centers = [compute_center(bbox) for bbox in bboxes]
+    centers = np.array(centers)
+    return centers
