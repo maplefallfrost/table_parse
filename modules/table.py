@@ -14,6 +14,7 @@ from textractor.visualizers.entitylist import EntityList
 from unstructured.partition.pdf import partition_pdf
 
 from modules.bounding_box import BoundingBox
+from modules.clustering import clustering
 from modules.connected_component import (
     find_connected_components,
     get_text_bboxes,
@@ -134,8 +135,10 @@ def extracted_by_connected_component(pdf_path: str, output_dir: str):
     bboxes = [BoundingBox(cc) for cc in ccs]
     text_bboxes = get_text_bboxes(bboxes)
     print("Number of text bboxes:", len(text_bboxes))
-    output_path = f"{output_dir}/{pdf_path.split('/')[-1].split('.')[0]}_text_bbox.png"
-    pts = transform_bboxes_to_points(text_bboxes)
+    clusters = clustering(text_bboxes, binary_image.shape[0])
+    print("Number of clusters:", len(clusters))
+    output_path = f"{output_dir}/{pdf_path.split('/')[-1].split('.')[0]}_text_line.png"
+    pts = transform_bboxes_to_points(clusters)
     visualize_bounding_boxes(color_image, pts, output_path)
 
 

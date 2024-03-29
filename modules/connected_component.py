@@ -101,13 +101,3 @@ def get_text_bboxes(bboxes: List[BoundingBox]) -> List[BoundingBox]:
     Q3 = np.percentile(areas, 75)
     text_bboxes = [bbox for bbox in bboxes if bbox.area < Q3 * 10]
     return text_bboxes
-
-
-def hierarchical_clustering(bboxes: List[List[int]]) -> List[List[int]]:
-    def compute_center(bbox: List[int]) -> List[int]:
-        min_row, max_row, min_col, max_col = bbox
-        return [(min_row + max_row) // 2, (min_col + max_col) // 2]
-
-    centers = [compute_center(bbox) for bbox in bboxes]
-    centers = np.array(centers)
-    return centers
