@@ -1,5 +1,5 @@
 class BoundingBox:
-    def __init__(self, bounds):
+    def __init__(self, bounds: tuple[int, int, int, int]):
         self.min_row, self.max_row, self.min_col, self.max_col = bounds
 
     def merge(self, box: "BoundingBox"):
@@ -7,6 +7,10 @@ class BoundingBox:
         self.max_row = max(self.max_row, box.max_row)
         self.min_col = min(self.min_col, box.min_col)
         self.max_col = max(self.max_col, box.max_col)
+
+    @property
+    def bounds(self) -> tuple[int, int, int, int]:
+        return self.min_col, self.min_row, self.max_col, self.max_row
 
     @property
     def area(self) -> int:

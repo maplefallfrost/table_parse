@@ -1,5 +1,3 @@
-from typing import List
-
 import numba
 import numpy as np
 
@@ -7,8 +5,8 @@ from modules.bounding_box import BoundingBox
 
 
 def transform_bboxes_to_points(
-    bboxes: List[BoundingBox],
-) -> List[List[tuple[int, int]]]:
+    bboxes: list[BoundingBox],
+) -> list[list[tuple[int, int]]]:
     points_list = []
     for bbox in bboxes:
         min_row, max_row, min_col, max_col = (
@@ -51,7 +49,7 @@ def union(parent: int, rank: np.ndarray, x: int, y: int):
 
 
 @numba.jit(nopython=True)
-def find_connected_components(matrix: np.ndarray) -> List[List[int]]:
+def find_connected_components(matrix: np.ndarray) -> list[list[int]]:
     FOREGROUND = 0
     rows, cols = matrix.shape
     parent = np.arange(rows * cols)
@@ -96,7 +94,7 @@ def find_connected_components(matrix: np.ndarray) -> List[List[int]]:
     return final_bboxes
 
 
-def get_text_bboxes(bboxes: List[BoundingBox]) -> List[BoundingBox]:
+def get_text_bboxes(bboxes: list[BoundingBox]) -> list[BoundingBox]:
     areas = [bbox.area for bbox in bboxes]
     Q3 = np.percentile(areas, 75)
     text_bboxes = [bbox for bbox in bboxes if bbox.area < Q3 * 10]

@@ -23,7 +23,7 @@ from modules.connected_component import (
 from modules.visualize import visualize_bounding_boxes
 
 
-def run_nougat(file_path: str, output_dir: str) -> int:
+def extracted_by_nougat(file_path: str, output_dir: str) -> int:
     cmd = ["nougat", file_path, "-o", output_dir, "-m", "0.1.0-base", "--no-skipping"]
     res = subprocess.run(cmd)
     if res.returncode != 0:
@@ -142,7 +142,7 @@ def extracted_by_connected_component(pdf_path: str, output_dir: str):
     visualize_bounding_boxes(color_image, pts, output_path)
 
 
-def parse_image(mode: str, image_path: str, output_dir: str) -> str:
+def parse_image(mode: str, image_path: str, output_dir: str):
     NAME_TO_EXTRACTOR = {
         "textractor": extracted_by_textractor,
         "unstructured": extracted_by_unstructured,

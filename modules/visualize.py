@@ -1,11 +1,9 @@
-from typing import List
-
 import cv2
 import numpy as np
 
 
 def visualize_bounding_boxes(
-    image: np.ndarray, bboxes: List[List[int]], output_path: str
+    image: np.ndarray, bboxes: list[list[int]], output_path: str
 ):
     for bbox in bboxes:
         pts = np.array(bbox, np.int32)
